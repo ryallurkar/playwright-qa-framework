@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "username": "standard_user",
+    "email": "standard_user@saucedemo.local",
+    "password": "secret_sauce",
+    "role": "standard",
+    "firstName": "Standard",
+    "lastName": "User",
+    "expectedTitle": "Products"
+  },
+  {
+    "id": 2,
+    "username": "locked_out_user",
+    "email": "locked_out_user@saucedemo.local",
+    "password": "secret_sauce",
+    "role": "locked",
+    "firstName": "Locked",
+    "lastName": "User",
+    "expectedError": "Sorry, this user has been locked out"
+  },
+  {
+    "id": 3,
+    "username": "invalid_user",
+    "email": "invalid_user@saucedemo.local",
+    "password": "wrong_password",
+    "role": "invalid",
+    "firstName": "Invalid",
+    "lastName": "User",
+    "expectedError": "Username and password do not match"
+  }
+]
