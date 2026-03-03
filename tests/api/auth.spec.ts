@@ -1,4 +1,4 @@
-import { test, expect } from '@fixtures/customFixtures';
+import { test, expect } from '@fixtures/apiFixtures';
 import { APIClient } from '@helpers/apiClient';
 import { parseJwt } from '@helpers/utils';
 

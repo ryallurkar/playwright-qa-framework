@@ -1,4 +1,4 @@
-import { test, expect } from '@fixtures/customFixtures';
+import { test, expect } from '@fixtures/apiFixtures';
 import { APIClient } from '@helpers/apiClient';
 import { randomUser } from '@test-data/dynamic/randomData';
 import staticUsers from '@test-data/static/users.json';
