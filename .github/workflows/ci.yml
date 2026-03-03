@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  ui-tests:
     runs-on: ubuntu-latest
     env:
       BASE_URL: ${{ secrets.BASE_URL }}
@@ -41,13 +41,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run smoke tests for pull requests
+      - name: Run UI smoke tests for pull requests
         if: github.event_name == 'pull_request'
-        run: npm run test:smoke
+        run: npx playwright test tests/ui/login.spec.ts --grep "@smoke"
 
-      - name: Run regression suite on main
+      - name: Run full UI suite on main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: npm run test:regression
+        run: npm run test:ui
 
       - name: Generate Allure report
         if: always()
