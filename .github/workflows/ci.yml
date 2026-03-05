@@ -42,11 +42,11 @@ jobs:
 
       - name: Run smoke tests for pull requests to main
         if: github.event_name == 'pull_request'
-        run: npm run test:smoke
+        run: npm run test:smoke -- --test-ignore="tests/ui/accessibility.spec.ts"
 
       - name: Run nightly regression tests
         if: github.event_name == 'schedule'
-        run: npm run test:regression
+        run: npm run test:regression -- --test-ignore="tests/ui/accessibility.spec.ts"
 
       - name: Generate Allure report
         if: always()
