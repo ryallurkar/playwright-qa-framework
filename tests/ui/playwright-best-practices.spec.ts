@@ -1,8 +1,6 @@
 import { test, expect } from '@fixtures/customFixtures';
 
 test.describe('Saucedemo Playwright Best Practices', () => {
-  test.skip(({ browserName }) => browserName === 'webkit', 'WebKit is unavailable on this host.');
-
   test('should login with resilient locators and web-first assertions @smoke @ui', async ({
     page,
     loginPage,
