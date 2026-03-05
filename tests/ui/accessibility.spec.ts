@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@fixtures/customFixtures';
 
 test.describe('Saucedemo Login Accessibility', () => {
-  test('should have no critical accessibility violations on the login page @smoke @ui', async ({
+  test('should have no critical accessibility violations on the login page @ui', async ({
     loginPage,
     page,
   }) => {
