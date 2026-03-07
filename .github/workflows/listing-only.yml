@@ -1,0 +1,42 @@
+name: listing-only
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  listing:
+    runs-on: ubuntu-latest
+    env:
+      LISTING_URL: ${{ secrets.LISTING_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox
+
+      - name: Run listing  spec on Chromium
+        run: npx playwright test tests/listing.spec.ts --project=chromium
+
+      - name: Run listing  spec on Firefox
+        if: always()
+        run: npx playwright test tests/listing.spec.ts --project=firefox
