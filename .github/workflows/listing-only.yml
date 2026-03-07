@@ -35,8 +35,8 @@ jobs:
         run: npx playwright install --with-deps chromium firefox
 
       - name: Run listing  spec on Chromium
-        run: npx playwright test tests/listing.spec.ts --project=chromium
+        run: npx playwright test tests/ui/listing.spec.ts --project=chromium
 
       - name: Run listing  spec on Firefox
         if: always()
-        run: npx playwright test tests/listing.spec.ts --project=firefox
+        run: npx playwright test tests/ui/listing.spec.ts --project=firefox
