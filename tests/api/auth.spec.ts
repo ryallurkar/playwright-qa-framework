@@ -3,7 +3,7 @@ import { APIClient } from '@helpers/apiClient';
 import { parseJwt } from '@helpers/utils';
 
 test.describe('Authentication API coverage', () => {
-  test('POST login returns 200 and token @api @smoke', async ({ apiContext }) => {
+  test('POST login returns 200 and token @api', async ({ apiContext }) => {
     // Arrange
     const client = new APIClient(apiContext);
     const payload = {
