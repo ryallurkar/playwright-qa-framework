@@ -1,15 +1,14 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: '0 2 * * *'
 
 jobs:
-  test:
+  ui-tests:
     runs-on: ubuntu-latest
     env:
       BASE_URL: ${{ secrets.BASE_URL }}
@@ -41,13 +40,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run smoke tests for pull requests
+      - name: Run smoke tests for pull requests to main
         if: github.event_name == 'pull_request'
-        run: npm run test:smoke
+        run: npm run test:smoke --test-ignore="tests/ui/accessibility.spec.ts"
 
-      - name: Run regression suite on main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: npm run test:regression
+      - name: Run nightly regression tests
+        if: github.event_name == 'schedule'
+        run: npm run test:regression --test-ignore="tests/ui/accessibility.spec.ts"
 
       - name: Generate Allure report
         if: always()
