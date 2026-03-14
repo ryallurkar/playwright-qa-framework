@@ -37,8 +37,6 @@ function loginForm(page: Page): Locator {
 }
 
 test.describe('Saucedemo Login Visual Regression', () => {
-  test.skip(({ browserName }) => browserName === 'webkit', 'WebKit is unavailable on this host.');
-
   test('captures the full login page baseline @ui @visual', async ({ page }) => {
     await gotoLogin(page);
 
