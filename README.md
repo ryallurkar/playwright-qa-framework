@@ -1,23 +1,74 @@
-# Playwright QA Framework
+# Playwright QA
 
-A production-ready Playwright + TypeScript automation framework for UI and API testing with reusable page objects, typed fixtures, Allure reporting, and GitHub Actions CI.
+End-to-end, API, visual regression, and accessibility tests written with Playwright and TypeScript — demonstrating production-grade testing architecture across multiple layers of the stack.
+
+---
+
+## What's Inside
+
+### UI / End-to-End
+
+**[`tests/ui/login.spec.ts`](tests/ui/login.spec.ts)**
+Full login flow coverage for SauceDemo: valid authentication, locked-account handling, empty-field validation, and session termination. Driven by static fixture data and a typed Page Object Model.
+
+**[`tests/ui/playwright-best-practices.spec.ts`](tests/ui/playwright-best-practices.spec.ts)**
+Demonstrates Playwright's resilient locator APIs — `getByRole`, `getByPlaceholder`, accessibility-first selectors — paired with web-first assertions and race-condition-safe interaction patterns. Covers login, product sorting, and cart state.
+
+**[`tests/ui/network-interception.spec.ts`](tests/ui/network-interception.spec.ts)**
+Three interception patterns in one suite: observing live request/response traffic, blocking individual assets with `route.abort()`, and mocking JSON API endpoints with `route.fulfill()`. Each test attaches structured JSON artifacts to the report.
+
+**[`tests/ui/playwright-lifecycle-patterns.spec.ts`](tests/ui/playwright-lifecycle-patterns.spec.ts)**
+Covers Playwright's full hook system — `beforeAll`, `afterAll`, `beforeEach`, `afterEach`, nested `describe` blocks — with inline commentary on the tradeoffs of each. Also demonstrates `test.skip`, `test.only`, `test.fail`, and `test.fixme` with real-world rationale.
+
+**[`tests/ui/login.visual.spec.ts`](tests/ui/login.visual.spec.ts)**
+Seven visual regression scenarios: full-page baselines, component-level crops, masked sensitive fields, error state captures, and an intentional layout diff demo to exercise the regression detection workflow.
+
+**[`tests/ui/accessibility.spec.ts`](tests/ui/accessibility.spec.ts)**
+Automated WCAG scanning with axe-core via `@axe-core/playwright`, asserting zero critical violations on the login surface.
+
+### API
+
+**[`tests/api/posts.spec.ts`](tests/api/posts.spec.ts)**
+Six REST tests covering the full CRUD surface against JSONPlaceholder: list shape validation, single-resource fetch, create (201), full replace (PUT), partial update (PATCH), and delete — each with typed response assertions and structured AAA steps. No secrets required; runs against a public endpoint.
+
+### Architecture
+
+**[`pages/`](pages/)** — Page Object Model with a `BasePage` foundation and typed concrete classes (`LoginPage`, `InventoryPage`)
+
+**[`fixtures/`](fixtures/)** — Custom Playwright fixtures for pre-authenticated UI state (`loginPage`, `authenticatedPage`, `loggedInPage`) and a reusable typed API context
+
+**[`helpers/`](helpers/)** — `APIClient` wrapper over Playwright's `APIRequestContext`; utilities for string generation, date formatting, JWT decoding, and async polling
+
+**[`test-data/`](test-data/)** — Static user fixtures (JSON) and dynamic data generators for randomised test inputs
+
+---
+
+## Testing Approach
+
+| Layer             | Tool                            | What's Covered                                          |
+| ----------------- | ------------------------------- | ------------------------------------------------------- |
+| E2E / UI          | Playwright                      | Login flows, navigation, product sorting, cart state    |
+| API               | Playwright APIRequestContext    | CRUD operations, status codes, body shape               |
+| Visual regression | Playwright snapshots            | Full-page, component, masked, error states              |
+| Accessibility     | axe-core + @axe-core/playwright | WCAG violations on key surfaces                         |
+| Network           | Playwright route interception   | Traffic observation, request blocking, response mocking |
+
+Tests are tagged `@smoke` (critical path, runs on every PR/push) and `@regression` (full coverage, runs nightly). The CI pipeline keeps UI and API jobs separate so failures are isolated.
+
+---
 
 ## Tech Stack
 
-- Playwright Test
-- TypeScript
-- ESLint
-- Prettier
-- dotenv
-- Allure Reporter
+- **[Playwright](https://playwright.dev)** — test runner, browser automation, API client, network layer
+- **TypeScript** — strict mode throughout; path aliases; typed fixtures and helpers
+- **Allure** — rich HTML reporting with step-level detail, JSON attachments, and run history
+- **axe-core** — automated accessibility scanning integrated into the test run
+- **GitHub Actions** — parallel CI with dependency caching, scheduled nightly runs, and artifact uploads
+- **ESLint + Prettier** — enforced code style across the entire test suite
 
-## Prerequisites
+---
 
-- Node.js 18 or newer
-- npm 9 or newer
-- A target application URL and API URL
-
-## Installation
+## Running Tests
 
 ```bash
 npm install
@@ -25,149 +76,33 @@ npx playwright install
 cp .env.example .env
 ```
 
-Update `.env` with valid application and API values before running tests.
+```bash
+npm run test:ui          # UI tests — Chromium, Firefox
+npm run test:api         # API tests
+npm run test:smoke       # Critical path only
+npm run test:regression  # Full nightly suite
+npm run report           # Generate and open Allure report
+```
 
-## Running Tests Locally
-
-Run all UI tests across Chromium, Firefox, and WebKit:
+Filter by tag or run a single spec:
 
 ```bash
-npm run test:ui
+npx playwright test --grep "@visual"
+npx playwright test tests/ui/network-interception.spec.ts
+npx playwright test --debug
 ```
 
-Run all API tests:
+---
 
-```bash
-npm run test:api
-```
+## Environment
 
-Run the full suite:
+Copy `.env.example` to `.env` and set `BASE_URL` for UI tests. API tests default to `https://jsonplaceholder.typicode.com` and require no additional configuration.
 
-```bash
-npx playwright test
-```
+| Variable             | Purpose                                                      |
+| -------------------- | ------------------------------------------------------------ |
+| `BASE_URL`           | UI target (default: `https://www.saucedemo.com`)             |
+| `API_BASE_URL`       | API target (default: `https://jsonplaceholder.typicode.com`) |
+| `TEST_USER_EMAIL`    | Login email for authenticated flows                          |
+| `TEST_USER_PASSWORD` | Login password for authenticated flows                       |
 
-Run a single spec:
-
-```bash
-npx playwright test tests/ui/login.spec.ts --project=chromium
-```
-
-## Running Specific Tags
-
-Smoke coverage:
-
-```bash
-npm run test:smoke
-```
-
-Regression coverage:
-
-```bash
-npm run test:regression
-```
-
-You can also filter directly:
-
-```bash
-npx playwright test --grep "@ui"
-npx playwright test --grep "@api"
-```
-
-## Test Scenarios
-
-The current UI login coverage targets `https://www.saucedemo.com`.
-
-- `@smoke @ui` `should login successfully with valid credentials`
-- `@regression @ui` `should show error for locked out user`
-- `@regression @ui` `should show error for invalid credentials`
-- `@regression @ui` `should show error when username is empty`
-- `@regression @ui` `should show error when password is empty`
-- `@smoke @ui` `should logout successfully after login`
-
-Run just the Saucedemo login suite:
-
-```bash
-npx playwright test tests/ui/login.spec.ts
-```
-
-Run only smoke tests:
-
-```bash
-npx playwright test --grep @smoke
-```
-
-## Allure Report
-
-Generate and open the Allure report:
-
-```bash
-npm run report
-```
-
-Raw Allure results are written to `allure-results/`. The generated HTML report is written to `allure-report/`.
-
-## Folder Structure
-
-```text
-.
-├── .github/workflows/ci.yml
-├── fixtures/customFixtures.ts
-├── helpers/
-│   ├── apiClient.ts
-│   └── utils.ts
-├── pages/
-│   ├── BasePage.ts
-│   ├── InventoryPage.ts
-│   └── LoginPage.ts
-├── test-data/
-│   ├── dynamic/randomData.ts
-│   └── static/users.json
-├── tests/
-│   ├── api/
-│   │   ├── auth.spec.ts
-│   │   └── users.spec.ts
-│   └── ui/
-│       └── login.spec.ts
-├── .env.example
-├── .eslintrc.js
-├── .prettierrc
-├── package.json
-├── playwright.config.ts
-├── README.md
-└── tsconfig.json
-```
-
-## Adding a New Page Object
-
-1. Create a new class in `pages/` that extends `BasePage`.
-2. Add strongly typed selectors as class properties.
-3. Encapsulate page interactions in reusable async methods.
-4. Expose the page object through `fixtures/customFixtures.ts` if tests need it.
-
-## Adding a New Test
-
-1. Add a new spec under `tests/ui` or `tests/api`.
-2. Import `test` and `expect` from `@fixtures/customFixtures`.
-3. Tag each test title with at least one functional tag such as `@smoke`, `@regression`, `@ui`, or `@api`.
-4. Follow the Arrange, Act, Assert structure to keep tests isolated and readable.
-
-## CI/CD
-
-GitHub Actions runs on pushes and pull requests to `main`.
-
-- Pull requests run the smoke suite to validate critical flows quickly.
-- Pushes to `main` run the full regression suite.
-- Dependencies are cached for faster execution.
-- Playwright browsers are installed during the workflow.
-- Allure results and the generated HTML report are uploaded as artifacts.
-
-## Environment Variables
-
-The framework reads values from `.env`.
-
-- `BASE_URL`: UI application base URL used by page objects and UI projects
-- `API_BASE_URL`: API base URL used by API fixtures and API client
-- `TEST_USER_EMAIL`: Valid login email for authenticated test flows
-- `TEST_USER_PASSWORD`: Valid login password for authenticated test flows
-- `CI`: Controls CI-specific behavior such as retries
+CI injects these from GitHub Secrets. The `API_BASE_URL` secret is optional.

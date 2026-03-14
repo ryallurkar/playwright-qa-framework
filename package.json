@@ -1,13 +1,25 @@
 {
-  "name": "playwright-qa-framework",
+  "name": "playwright-qa-showcase",
   "version": "1.0.0",
   "private": true,
-  "description": "Production-ready Playwright + TypeScript QA automation framework for UI and API testing.",
+  "description": "End-to-end, API, visual regression, and accessibility tests built with Playwright and TypeScript. Demonstrates Page Object Model, network interception, route mocking, axe-core scanning, and CI/CD with GitHub Actions.",
+  "keywords": [
+    "playwright",
+    "typescript",
+    "e2e-testing",
+    "api-testing",
+    "visual-regression",
+    "accessibility-testing",
+    "page-object-model",
+    "test-automation",
+    "github-actions",
+    "allure-reporting"
+  ],
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "test:ui": "playwright test --grep \"@ui\" --project=chromium --project=firefox --project=webkit",
+    "test:ui": "playwright test --grep \"@ui\" --project=chromium --project=firefox",
     "test:api": "playwright test --grep \"@api\" --project=api",
     "test:smoke": "playwright test --grep \"@smoke\"",
     "test:regression": "playwright test --grep \"@regression\"",
