@@ -9,8 +9,6 @@ type SauceUser = {
 const [standardUser] = users as SauceUser[];
 
 test.describe('Playwright Network Interception And API Mocking', () => {
-  test.skip(({ browserName }) => browserName === 'webkit', 'WebKit is unavailable on this host.');
-
   test('should observe post-login inventory asset traffic @smoke @ui', async ({
     page,
     loginPage,
@@ -26,7 +24,9 @@ test.describe('Playwright Network Interception And API Mocking', () => {
     });
 
     const inventoryImageResponsePromise = page.waitForResponse((response) => {
-      return response.url().includes('sauce-backpack') && response.request().resourceType() === 'image';
+      return (
+        response.url().includes('sauce-backpack') && response.request().resourceType() === 'image'
+      );
     });
 
     await test.step('Act', async () => {
@@ -67,7 +67,7 @@ test.describe('Playwright Network Interception And API Mocking', () => {
     });
   });
 
-  test('should block an inventory image request with route.abort @regression @ui', async ({
+  test('should block an inventory image request with route.abort @regression', async ({
     page,
     loginPage,
     inventoryPage,
@@ -100,17 +100,19 @@ test.describe('Playwright Network Interception And API Mocking', () => {
       await expect(await inventoryPage.isInventoryPageVisible()).toBe(true);
       await expect(abortedImageUrl).toContain('/static/media/');
 
-      const imageState = await page.locator('.inventory_item img').evaluateAll((images, expectedUrl) => {
-        const matchingImage = images.find((image) => (image as HTMLImageElement).currentSrc === expectedUrl) as
-          | HTMLImageElement
-          | undefined;
+      const imageState = await page
+        .locator('.inventory_item img')
+        .evaluateAll((images, expectedUrl) => {
+          const matchingImage = images.find(
+            (image) => (image as HTMLImageElement).currentSrc === expectedUrl,
+          ) as HTMLImageElement | undefined;
 
-        return {
-          found: Boolean(matchingImage),
-          currentSrc: matchingImage?.currentSrc ?? '',
-          naturalWidth: matchingImage?.naturalWidth ?? -1,
-        };
-      }, abortedImageUrl);
+          return {
+            found: Boolean(matchingImage),
+            currentSrc: matchingImage?.currentSrc ?? '',
+            naturalWidth: matchingImage?.naturalWidth ?? -1,
+          };
+        }, abortedImageUrl);
 
       await expect(imageState.found).toBe(true);
       await expect(imageState.currentSrc).toContain('static/media');

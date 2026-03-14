@@ -56,16 +56,6 @@ export default defineConfig({
       },
     },
     {
-      name: 'webkit',
-      testDir: './tests/ui',
-      testMatch: '**/*.spec.ts',
-      use: {
-        ...devices['Desktop Safari'],
-        browserName: 'webkit',
-        baseURL: process.env.BASE_URL,
-      },
-    },
-    {
       name: 'api',
       testDir: './tests/api',
       testMatch: '**/*.spec.ts',
