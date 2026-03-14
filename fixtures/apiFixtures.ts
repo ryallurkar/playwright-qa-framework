@@ -4,21 +4,13 @@ type ApiFixtures = {
   apiContext: APIRequestContext;
 };
 
-const getRequiredEnv = (name: 'API_BASE_URL'): string => {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`Environment variable ${name} is required for this test run.`);
-  }
-
-  return value;
-};
+const DEFAULT_API_BASE_URL = 'https://jsonplaceholder.typicode.com';
 
 export const test = base.extend<ApiFixtures>({
   // Playwright fixture callbacks require object destructuring for the first parameter.
   // eslint-disable-next-line no-empty-pattern
   apiContext: async ({}, use) => {
-    const baseURL = getRequiredEnv('API_BASE_URL');
+    const baseURL = process.env.API_BASE_URL ?? DEFAULT_API_BASE_URL;
     const authToken = process.env.API_AUTH_TOKEN;
     const headers: Record<string, string> = {
       Accept: 'application/json',
