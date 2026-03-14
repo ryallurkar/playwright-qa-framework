@@ -33,7 +33,7 @@ test.describe('Saucedemo Playwright Lifecycle Patterns', () => {
   // Use it to close shared resources created in `beforeAll`.
   // Common mistake: forgetting teardown and leaving contexts, files, or DB connections open.
   test.afterAll(async () => {
-    await healthcheckContext.close();
+    await healthcheckContext?.close();
   });
 
   // `test.beforeEach` runs before every individual test.
@@ -143,7 +143,7 @@ test.describe('Saucedemo Playwright Lifecycle Patterns', () => {
     // `test.fixme` documents a scenario that is known broken or not ready to execute yet.
     // Use it when the test should exist for visibility, but running it right now would be noise.
     // Common mistake: using `fixme` as a permanent replacement for implementing the test properly.
-    test.fixme('documents a future cart assertion that still needs implementation @ui', async ({ page }) => {
+    test.fixme('demonstrates test.fixme deferring a cart badge assertion until the feature is stable @ui', async ({ page }) => {
       await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
       await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
     });
