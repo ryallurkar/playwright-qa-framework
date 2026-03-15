@@ -1,12 +1,15 @@
 import { Page, test as base, expect } from '@playwright/test';
 import { InventoryPage } from '@pages/InventoryPage';
 import { LoginPage } from '@pages/LoginPage';
+import { AUTH_FILE } from '@test-data/static/authPaths';
 
 type FrameworkFixtures = {
   loginPage: LoginPage;
   inventoryPage: InventoryPage;
   authenticatedPage: InventoryPage;
   loggedInPage: { page: Page; inventoryPage: InventoryPage };
+  // Restores session from storageState — no login round-trip per test.
+  preAuthPage: InventoryPage;
 };
 
 export const test = base.extend<FrameworkFixtures>({
@@ -43,6 +46,16 @@ export const test = base.extend<FrameworkFixtures>({
     }
 
     await use({ page, inventoryPage });
+  },
+
+  preAuthPage: async ({ browser }, use) => {
+    const baseURL = process.env.BASE_URL ?? 'https://www.saucedemo.com';
+    const context = await browser.newContext({ storageState: AUTH_FILE, baseURL });
+    const page = await context.newPage();
+    await page.goto('/inventory.html');
+    const inventoryPage = new InventoryPage(page);
+    await use(inventoryPage);
+    await context.close();
   },
 });
 
