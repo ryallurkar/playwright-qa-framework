@@ -30,4 +30,12 @@ export class InventoryPage extends BasePage {
   async isCartBadgeVisible(): Promise<boolean> {
     return this.isVisible(this.shoppingCartBadge);
   }
+
+  async getInventoryItemNames(): Promise<string[]> {
+    return this.page.locator('.inventory_item_name').allTextContents();
+  }
+
+  async getInventoryItemPrices(): Promise<string[]> {
+    return this.page.locator('.inventory_item_price').allTextContents();
+  }
 }

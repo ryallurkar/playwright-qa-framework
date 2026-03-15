@@ -6,3 +6,4 @@ allure-results
 allure-report
 .DS_Store
 *.log
+.auth/

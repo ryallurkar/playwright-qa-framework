@@ -35,10 +35,18 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
   },
   projects: [
+    // Runs once before UI projects — logs in and saves session to .auth/user.json.
+    // UI tests that need pre-authenticated state use the preAuthPage fixture,
+    // which restores this session instead of logging in per test.
+    {
+      name: 'setup',
+      testMatch: '**/setup/auth.setup.ts',
+    },
     {
       name: 'chromium',
       testDir: './tests/ui',
       testMatch: '**/*.spec.ts',
+      dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
         browserName: 'chromium',
@@ -49,6 +57,7 @@ export default defineConfig({
       name: 'firefox',
       testDir: './tests/ui',
       testMatch: '**/*.spec.ts',
+      dependencies: ['setup'],
       use: {
         ...devices['Desktop Firefox'],
         browserName: 'firefox',
