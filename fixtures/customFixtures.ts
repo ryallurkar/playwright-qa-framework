@@ -49,7 +49,7 @@ export const test = base.extend<FrameworkFixtures>({
   },
 
   preAuthPage: async ({ browser }, use) => {
-    const baseURL = process.env.BASE_URL ?? 'https://www.saucedemo.com';
+    const baseURL = process.env.BASE_URL || 'https://www.saucedemo.com';
     const context = await browser.newContext({ storageState: AUTH_FILE, baseURL });
     const page = await context.newPage();
     await page.goto('/inventory.html');
